@@ -52,6 +52,7 @@ input:focus{border-color:#d9a6ad;box-shadow:0 0 0 3px rgba(232,183,189,.22)}
 .totalbar .base{position:absolute;inset:0;border-radius:8px}
 .totalbar .fill{position:absolute;left:0;top:0;height:100%;display:flex;overflow:hidden;border-radius:7px;min-width:0}
 .totalbar .overflow{position:absolute;left:100%;top:0;height:100%;display:flex;overflow:hidden;border-radius:0 7px 7px 0}
+.totalbar .total-seg{height:100%;min-width:0;flex:1 1 0}
 .targetline{position:absolute;right:-1px;top:-5px;height:40px;border-left:2px dashed #a9786e;z-index:4}
 .targetlabel{position:absolute;right:-1px;top:-19px;transform:translateX(50%);font-size:9px;color:var(--muted);white-space:nowrap}
 .totalinfo{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:5px}
@@ -60,6 +61,7 @@ input:focus{border-color:#d9a6ad;box-shadow:0 0 0 3px rgba(232,183,189,.22)}
 .dot{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:3px}
 .compare{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .comparebox{background:var(--card2);border:1px solid var(--border);border-radius:13px;padding:12px}
+.comparebox.current-better{background:#dfc0c3;border-color:#d2a9ad}
 .comparebox .big{font-size:20px;font-weight:700;margin:4px 0}
 .delta.up{color:#9b6a5c}.delta.down{color:#66866b}.delta.same{color:var(--muted)}
 .calendar-head{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:5px}
@@ -233,15 +235,22 @@ function renderTotal(containerId,ds){
  el.innerHTML=metrics.map(m=>{
   const total=ds.reduce((a,d)=>a+Number(get(d)[m.id]||0),0), goal=Math.max(1,Number(m.goal())||1);
   const ratio=total/goal, pct=Math.min(100,ratio*100);
-  let normal="", over="";
-  let remaining=Math.ceil(Math.min(total,goal)/m.step), skip=0;
+  let normal="", over="", remaining=goal;
+
   ds.forEach((d,i)=>{
-    let n=Math.ceil(Number(get(d)[m.id]||0)/m.step);
-    for(let j=0;j<n;j++){
-      if(skip<remaining){normal+=`<span class="seg" style="background:var(${css[i]})"></span>`;skip++}
-      else over+=`<span class="seg" style="background:var(${css[i]})"></span>`;
+    const value=Number(get(d)[m.id]||0);
+    const normalValue=Math.min(value,Math.max(0,remaining));
+    const overValue=Math.max(0,value-normalValue);
+
+    if(normalValue>0){
+      normal+=`<span class="total-seg" style="flex-grow:${normalValue};background:var(${css[i]})"></span>`;
+      remaining-=normalValue;
+    }
+    if(overValue>0){
+      over+=`<span class="total-seg" style="flex-grow:${overValue};background:var(${css[i]})"></span>`;
     }
   });
+
   return `<div>
    <div class="totalinfo"><span>${m.label}</span><strong>${m.format(total)} / ${m.format(goal)}</strong></div>
    <div class="totalbar">
@@ -279,7 +288,7 @@ function renderComparison(){
   return `<div class="card" style="margin-bottom:10px;background:var(--card2)">
     <div class="metric-head"><span>${m.label}</span>${pct===null?"":`<strong>${pct>0?"+":""}${pct}%</strong>`}</div>
     <div class="compare">
-      <div class="comparebox"><div class="sub">今週</div><div class="big">${m.format(a)}</div><div>${delta(a,b)}</div></div>
+      <div class="comparebox ${a>b?"current-better":""}"><div class="sub">今週</div><div class="big">${m.format(a)}</div><div>${delta(a,b)}</div></div>
       <div class="comparebox"><div class="sub">前週</div><div class="big">${m.format(b)}</div><div class="sub">${m.format(m.goal())} が目標</div></div>
     </div>
   </div>`

@@ -48,14 +48,16 @@ input:focus{border-color:#d9a6ad;box-shadow:0 0 0 3px rgba(232,183,189,.22)}
 .seg{min-width:6px;flex:0 0 6px}
 .daycell.today .daybar{outline:2px solid #c99099;outline-offset:1px}
 .dayvalue{text-align:center;font-size:10px;color:var(--muted);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.totalbar{position:relative;height:30px;background:#f1e5d8;border:1px solid #e4d2c2;border-radius:8px;overflow:visible}
-.totalbar .base{position:absolute;inset:0;border-radius:8px}
-.totalbar .fill{position:absolute;left:0;top:0;height:100%;display:flex;overflow:hidden;border-radius:7px;min-width:0}
-.totalbar .overflow{position:absolute;left:100%;top:0;height:100%;display:flex;overflow:hidden;border-radius:0 7px 7px 0}
+.totalbar{position:relative;height:30px;background:#f1e5d8;border:1px solid #e4d2c2;border-radius:8px;margin-top:2px}
+.totalbar .clip{position:absolute;inset:0;overflow:hidden;border-radius:7px}
+.totalbar .overzone{position:absolute;top:0;right:0;height:100%;background:rgba(232,183,189,.18)}
+.totalbar .fillrow{position:absolute;left:0;top:0;height:100%;display:flex}
 .totalbar .total-seg{height:100%;min-width:0;flex:1 1 0}
-.targetline{position:absolute;right:-1px;top:-5px;height:40px;border-left:2px dashed #a9786e;z-index:4}
-.targetlabel{position:absolute;right:-1px;top:-19px;transform:translateX(50%);font-size:9px;color:var(--muted);white-space:nowrap}
-.totalinfo{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:5px}
+.totalbar .hatch{position:absolute;top:0;height:100%;background:repeating-linear-gradient(135deg,rgba(255,255,255,.55) 0 3px,transparent 3px 7px);pointer-events:none}
+.targetline{position:absolute;top:-5px;height:40px;border-left:2px dashed #a9786e;z-index:4}
+.targetlabel{position:absolute;left:0;top:-14px;transform:translateX(-50%);font-size:9px;color:var(--muted);white-space:nowrap}
+.pct{font-weight:700}.pct.done{color:var(--pink-dark)}
+.totalinfo{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:18px}
 .totalinfo strong{color:var(--text)}
 .legend{display:flex;flex-wrap:wrap;gap:7px 11px;font-size:10px;color:var(--muted);margin-top:9px}
 .dot{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:3px}
@@ -157,7 +159,7 @@ input:focus{border-color:#d9a6ad;box-shadow:0 0 0 3px rgba(232,183,189,.22)}
 <main id="page-settings" style="display:none">
 <section class="card">
 <h2>週間目標</h2>
-<p class="sub" style="margin-bottom:13px">目標を100%として、達成後はバーが右へ伸びます。</p>
+<p class="sub" style="margin-bottom:13px">目標を100%として、達成後は100%ラインを越えてバーが右へ伸びます。</p>
 <div class="setting-row"><label>トレッドミル（分）<input id="goalT" type="number" min="1" step="1"></label><span class="sub">1週間の目標</span></div>
 <div class="setting-row"><label>歩数（歩）<input id="goalS" type="number" min="1" step="100"></label><span class="sub">1週間の目標</span></div>
 <div class="setting-row"><label>Fit Boxing 2（分）<input id="goalB" type="number" min="1" step="1"></label><span class="sub">1週間の目標</span></div>
@@ -234,29 +236,27 @@ function renderTotal(containerId,ds){
  const el=document.getElementById(containerId);
  el.innerHTML=metrics.map(m=>{
   const total=ds.reduce((a,d)=>a+Number(get(d)[m.id]||0),0), goal=Math.max(1,Number(m.goal())||1);
-  const ratio=total/goal, pct=Math.min(100,ratio*100);
-  let normal="", over="", remaining=goal;
-
-  ds.forEach((d,i)=>{
-    const value=Number(get(d)[m.id]||0);
-    const normalValue=Math.min(value,Math.max(0,remaining));
-    const overValue=Math.max(0,value-normalValue);
-
-    if(normalValue>0){
-      normal+=`<span class="total-seg" style="flex-grow:${normalValue};background:var(${css[i]})"></span>`;
-      remaining-=normalValue;
-    }
-    if(overValue>0){
-      over+=`<span class="total-seg" style="flex-grow:${overValue};background:var(${css[i]})"></span>`;
-    }
-  });
-
+  const ratio=total/goal;
+  // 目標(100%)を枠の途中に置き、超過分も枠内に収める。最低でも125%まで表示し、それ以上は自動で縮尺を変える
+  const scale=Math.max(1.25,ratio);
+  const goalPos=100/scale;                 // 100%ライン位置(%)
+  const fillW=ratio/scale*100;             // 記録バー全体の幅(%)
+  const overW=Math.max(0,(ratio-1)/scale*100);
+  const segs=ds.map((d,i)=>{
+    const v=Number(get(d)[m.id]||0);
+    return v>0?`<span class="total-seg" style="flex-grow:${v};background:var(${css[i]})"></span>`:"";
+  }).join("");
+  const pct=Math.round(ratio*100);
+  const diff=total>=goal?`目標より +${m.format(total-goal)}`:`あと ${m.format(goal-total)}`;
   return `<div>
-   <div class="totalinfo"><span>${m.label}</span><strong>${m.format(total)} / ${m.format(goal)}</strong></div>
+   <div class="totalinfo"><span>${m.label}　<span class="pct ${ratio>=1?"done":""}">${pct}%</span>（${diff}）</span><strong>${m.format(total)} / ${m.format(goal)}</strong></div>
    <div class="totalbar">
-    <div class="base"></div><div class="fill" style="width:${pct}%">${normal}</div>
-    <div class="overflow" style="width:${Math.max(0,(ratio-1)*100)}%">${over}</div>
-    <div class="targetline"><span class="targetlabel">100%</span></div>
+    <div class="clip">
+     <div class="overzone" style="width:${100-goalPos}%"></div>
+     <div class="fillrow" style="width:${fillW}%">${segs}</div>
+     ${overW>0?`<div class="hatch" style="left:${goalPos}%;width:${overW}%"></div>`:""}
+    </div>
+    <div class="targetline" style="left:${goalPos}%"><span class="targetlabel">100%</span></div>
    </div>
   </div>`
  }).join("");

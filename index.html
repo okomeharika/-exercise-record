@@ -142,12 +142,12 @@ input:focus{border-color:#d9a6ad;box-shadow:0 0 0 3px rgba(232,183,189,.22)}
 
 <main id="page-review" style="display:none">
 <section class="card">
-<div class="tabs"><button id="weekTab" class="active">週間比較</button><button id="monthTab">月間</button></div>
 <div id="weekReview">
 <div class="weeknav"><button class="ghost" id="prevReview">‹</button><div class="weektitle" id="reviewWeek"></div><button class="ghost" id="nextReview">›</button></div>
 <div id="comparison"></div>
 </div>
-<div id="monthReview" style="display:none">
+<div id="monthReview" style="margin-top:22px;padding-top:16px;border-top:1px solid var(--border)">
+<h2 style="margin-bottom:12px">月間カレンダー</h2>
 <div class="weeknav"><button class="ghost" id="prevMonth">‹</button><div class="weektitle" id="monthTitle"></div><button class="ghost" id="nextMonth">›</button></div>
 <div class="calendar-head" id="calHead"></div>
 <div class="calendar-grid" id="calendar"></div>
@@ -216,6 +216,11 @@ function segments(value,dayIndex,step){
  for(let i=0;i<n;i++) out+=`<span class="seg" style="background:var(${css[dayIndex]})"></span>`;
  return out;
 }
+function dayFill(v,dayIndex,m){
+ const target=Math.max(1,Number(m.goal())||1)/7;   // 週間目標の7分の1
+ const w=Math.min(100,v/target*100);               // 目標の7分の1以上なら満タン(100%)
+ return v>0?`<span style="flex:0 0 ${w}%;background:var(${css[dayIndex]})"></span>`:"";
+}
 function renderWeek(containerId,ds){
  const el=document.getElementById(containerId);
  el.innerHTML=metrics.map(m=>{
@@ -225,7 +230,7 @@ function renderWeek(containerId,ds){
    <div class="days">${ds.map((d,i)=>{
     const v=Number(get(d)[m.id]||0);
     return `<div class="daycell ${key(d)===key(new Date())?"today":""}">
-      <div class="dayname">${days[i]}</div><div class="daybar">${segments(v,i,m.step)}</div>
+      <div class="dayname">${days[i]}</div><div class="daybar">${m.id==="treadmill"?dayFill(v,i,m):segments(v,i,m.step)}</div>
       <div class="dayvalue">${v?m.format(v):"—"}</div>
     </div>`
    }).join("")}</div>
@@ -337,8 +342,6 @@ document.getElementById("prevHome").onclick=()=>{homeOffset--;renderHome()}
 document.getElementById("nextHome").onclick=()=>{homeOffset++;renderHome()}
 document.getElementById("prevReview").onclick=()=>{reviewOffset--;renderComparison()}
 document.getElementById("nextReview").onclick=()=>{reviewOffset++;renderComparison()}
-weekTab.onclick=()=>{weekTab.classList.add("active");monthTab.classList.remove("active");weekReview.style.display="block";monthReview.style.display="none"}
-monthTab.onclick=()=>{monthTab.classList.add("active");weekTab.classList.remove("active");weekReview.style.display="none";monthReview.style.display="block";renderMonth()}
 prevMonth.onclick=()=>{monthOffset--;renderMonth()}
 nextMonth.onclick=()=>{monthOffset++;renderMonth()}
 document.getElementById("saveGoals").onclick=()=>{

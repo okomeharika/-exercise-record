@@ -68,13 +68,13 @@ input:focus{border-color:#d9a6ad;box-shadow:0 0 0 3px rgba(232,183,189,.22)}
 .delta.up{color:#9b6a5c}.delta.down{color:#66866b}.delta.same{color:var(--muted)}
 .calendar-head{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:5px}
 .calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
-.calday{min-height:70px;background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:5px;cursor:pointer}
+.calday{min-height:70px;min-width:0;background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:5px;cursor:pointer}
 .calday.empty{background:transparent;border-color:transparent;cursor:default}
 .calday.today{outline:2px solid #c99099;outline-offset:1px}
 .calnum{font-size:10px;color:var(--muted);margin-bottom:5px}
 .caldots{display:flex;gap:3px;flex-wrap:wrap}
 .caldot{height:5px;border-radius:3px;flex:1;min-width:8px}
-.calamount{font-size:9px;color:var(--muted);margin-top:4px;white-space:nowrap;overflow:hidden}
+.calamount{font-size:9px;line-height:1.35;color:var(--muted);margin-top:4px;display:flex;flex-direction:column;overflow:hidden}.calamount span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tabs{display:flex;gap:7px;margin-bottom:14px}
 .tabs button{flex:1}
 .row{display:flex;justify-content:space-between;align-items:center;gap:10px}
@@ -86,24 +86,9 @@ input:focus{border-color:#d9a6ad;box-shadow:0 0 0 3px rgba(232,183,189,.22)}
 @media(min-width:600px){.modal{align-items:center}.app{padding-top:28px}}
 @media(max-width:470px){.grid3{grid-template-columns:1fr}.setting-row{grid-template-columns:1fr 125px}.days{gap:3px}.daybar{height:23px}.app{padding-left:12px;padding-right:12px}}
 
-/* Personal lock */
-#lockScreen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px;z-index:1000}
-.lockbox{width:min(420px,100%);background:var(--card);border:1px solid var(--border);border-radius:22px;padding:26px 20px;box-shadow:0 12px 40px rgba(93,65,47,.10);text-align:center}
-.lockicon{font-size:30px;margin-bottom:8px}.lockbox h1{font-size:22px;margin-bottom:7px}.lockbox p{font-size:12px;color:var(--muted);line-height:1.7}.lockbox input{text-align:center;font-size:20px;letter-spacing:.18em;max-width:240px;margin:16px auto 0}.lock-error{font-size:12px;color:#a45d65;min-height:18px;margin-top:8px}
 </style>
 </head>
 <body>
-<div id="lockScreen" aria-label="個人用ロック">
-  <div class="lockbox">
-    <div class="lockicon">🔒</div>
-    <h1>運動記録</h1>
-    <p>個人用アプリです。<br>設定したコードを入力してください。</p>
-    <input id="accessCode" type="password" inputmode="numeric" autocomplete="off" maxlength="6" placeholder="コード" aria-label="アクセスコード">
-    <button id="unlockButton" class="primary">入る</button>
-    <div id="lockError" class="lock-error"></div>
-  </div>
-</div>
-
 <div class="app">
 <header><div><h1>運動記録</h1><p class="sub">今日の運動を、あとから振り返れる記録帳</p></div></header>
 
@@ -311,7 +296,7 @@ function renderMonth(){
   html+=`<div class="calday ${key(d)===key(new Date())?"today":""}" onclick="openEdit('${key(d)}')">
    <div class="calnum">${n}</div>
    <div class="caldots">${metrics.map((m,i)=>`<span class="caldot" style="background:var(${css[(d.getDay()+6)%7]});opacity:${vals[i]?1:.18}"></span>`).join("")}</div>
-   <div class="calamount">${active?`${fmt(vals[0])}分 / ${fmt(vals[1])}歩`:""}</div>
+   <div class="calamount">${active?`<span>${fmt(vals[0])}分</span><span>${fmt(vals[1])}歩</span><span>${fmt(vals[2])}分</span>`:""}</div>
   </div>`;
  }
  calendar.innerHTML=html;
@@ -372,25 +357,6 @@ document.getElementById("deleteRecord").onclick=()=>{
 document.getElementById("goalT").value=goals.treadmill;document.getElementById("goalS").value=goals.steps;document.getElementById("goalB").value=goals.boxing;
 loadToday();renderHome();renderComparison();renderMonth();
 
-// Personal access lock. This is a convenience lock, not server-side authentication.
-const PERSONAL_CODE = "739184"; // 仮コード：公開前に好きなコードへ変更してください
-const lockScreen = document.getElementById("lockScreen");
-const accessCode = document.getElementById("accessCode");
-const unlockButton = document.getElementById("unlockButton");
-const lockError = document.getElementById("lockError");
-function unlock(){
-  if(accessCode.value === PERSONAL_CODE){
-    sessionStorage.setItem("exerciseAppUnlocked","1");
-    lockScreen.style.display="none";
-    lockError.textContent="";
-  }else{
-    lockError.textContent="コードが違います。もう一度入力してください。";
-    accessCode.select();
-  }
-}
-unlockButton.onclick=unlock;
-accessCode.addEventListener("keydown",e=>{if(e.key==="Enter")unlock()});
-if(sessionStorage.getItem("exerciseAppUnlocked")==="1") lockScreen.style.display="none";
 </script>
 </body>
 </html>

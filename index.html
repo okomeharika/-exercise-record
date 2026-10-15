@@ -18,7 +18,7 @@
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font-family:Meiryo,"メイリオ",system-ui,-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}
 button,input{font:inherit}
-.app{max-width:720px;margin:0 auto;padding:20px 16px 44px}
+.app{max-width:720px;margin:0 auto;padding:20px 16px calc(110px + env(safe-area-inset-bottom,0px))}
 header{display:flex;justify-content:space-between;align-items:flex-end;margin:6px 0 18px}
 h1{font-size:25px;margin:0;font-weight:700;letter-spacing:.04em}
 h2{font-size:18px;margin:0 0 12px}
@@ -26,7 +26,7 @@ h3{font-size:15px;margin:0 0 8px}
 p{margin:0}
 .sub{font-size:12px;color:var(--muted);margin-top:4px}
 .card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:16px;box-shadow:var(--shadow);margin-bottom:14px}
-.nav{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.nav{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom,0px));width:min(720px,calc(100% - 24px));z-index:10;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:10px;background:var(--card);border:1px solid var(--border);border-radius:18px;box-shadow:0 8px 28px rgba(93,65,47,.18)}
 .nav button,.seg button,.ghost,.primary{border:1px solid var(--border);background:var(--card);color:var(--text);border-radius:12px;padding:10px 8px;cursor:pointer}
 .nav button.active,.seg button.active{background:var(--pink2);border-color:#e6b8bd;color:var(--pink-dark);font-weight:700}
 .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}

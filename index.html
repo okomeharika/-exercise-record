@@ -176,7 +176,7 @@ const days=["月","火","水","木","金","土","日"];
 const css=["--mon","--tue","--wed","--thu","--fri","--sat","--sun"];
 let records=JSON.parse(localStorage.getItem(KEY)||"{}");
 let goals=JSON.parse(localStorage.getItem(GOALKEY)||'{"treadmill":180,"steps":50000,"boxing":90}');
-let homeOffset=0, reviewOffset=0, monthOffset=0, editDate=null;
+let homeOffset=0, reviewOffset=1, monthOffset=0, editDate=null;
 
 function save(){localStorage.setItem(KEY,JSON.stringify(records))}
 function persistGoals(){localStorage.setItem(GOALKEY,JSON.stringify(goals))}
@@ -215,7 +215,7 @@ function renderWeek(containerId,ds){
    <div class="days">${ds.map((d,i)=>{
     const v=Number(get(d)[m.id]||0);
     return `<div class="daycell ${key(d)===key(new Date())?"today":""}">
-      <div class="dayname">${days[i]}</div><div class="daybar">${m.id==="treadmill"?dayFill(v,i,m):segments(v,i,m.step)}</div>
+      <div class="dayname">${days[i]}</div><div class="daybar">${dayFill(v,i,m)}</div>
       <div class="dayvalue">${v?m.format(v):"—"}</div>
     </div>`
    }).join("")}</div>
@@ -269,8 +269,9 @@ function delta(a,b){
  return d>0?`<span class="delta up">+${fmt(d)}</span>`:`<span class="delta down">${fmt(d)}</span>`;
 }
 function renderComparison(){
- const cur=weekDates(reviewOffset), prev=weekDates(reviewOffset-1);
- reviewWeek.textContent=weekTitle(cur);
+ const cur=weekDates(0), prev=weekDates(-reviewOffset);
+ const lbl=reviewOffset===1?"先週":reviewOffset===2?"先々週":`${reviewOffset}週間前`;
+ reviewWeek.innerHTML=`<div style="display:grid;grid-template-columns:1fr auto 1fr;column-gap:14px;align-items:center;text-align:center"><span>今週</span><span>vs</span><span>${lbl}</span><span class="sub" style="font-weight:400;margin-top:3px">${weekTitle(cur)}</span><span></span><span class="sub" style="font-weight:400;margin-top:3px">${weekTitle(prev)}</span></div>`;
  comparison.innerHTML=metrics.map(m=>{
   const a=cur.reduce((s,d)=>s+Number(get(d)[m.id]||0),0);
   const b=prev.reduce((s,d)=>s+Number(get(d)[m.id]||0),0);
@@ -279,7 +280,7 @@ function renderComparison(){
     <div class="metric-head"><span>${m.label}</span>${pct===null?"":`<strong>${pct>0?"+":""}${pct}%</strong>`}</div>
     <div class="compare">
       <div class="comparebox ${a>b?"current-better":""}"><div class="sub">今週</div><div class="big">${m.format(a)}</div><div>${delta(a,b)}</div></div>
-      <div class="comparebox"><div class="sub">前週</div><div class="big">${m.format(b)}</div><div class="sub">${m.format(m.goal())} が目標</div></div>
+      <div class="comparebox"><div class="sub">${lbl}</div><div class="big">${m.format(b)}</div><div class="sub">${m.format(m.goal())} が目標</div></div>
     </div>
   </div>`
  }).join("");
@@ -325,8 +326,8 @@ document.getElementById("saveToday").onclick=()=>{
 };
 document.getElementById("prevHome").onclick=()=>{homeOffset--;renderHome()}
 document.getElementById("nextHome").onclick=()=>{homeOffset++;renderHome()}
-document.getElementById("prevReview").onclick=()=>{reviewOffset--;renderComparison()}
-document.getElementById("nextReview").onclick=()=>{reviewOffset++;renderComparison()}
+document.getElementById("prevReview").onclick=()=>{reviewOffset++;renderComparison()}
+document.getElementById("nextReview").onclick=()=>{if(reviewOffset>1){reviewOffset--;renderComparison()}}
 prevMonth.onclick=()=>{monthOffset--;renderMonth()}
 nextMonth.onclick=()=>{monthOffset++;renderMonth()}
 document.getElementById("saveGoals").onclick=()=>{

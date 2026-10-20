@@ -3,17 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#f7efe3">
+<meta name="theme-color" content="#FFF0F5">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>運動記録</title>
 <style>
 :root{
-  --bg:#f7efe3; --card:#fffaf3; --card2:#fcf4ea; --text:#553b2d;
-  --muted:#8a6f60; --border:#ead8c8; --pink:#e8b7bd; --pink2:#f2d4d6;
-  --pink-dark:#9c626a; --shadow:0 6px 20px rgba(93,65,47,.07);
+  --bg:#FFF0F5; --card:#FFFFFF; --card2:#FFF7FA; --text:#5A2A3C;
+  --muted:#A67B8D; --border:#F8D3DF; --pink:#F7ADC3; --pink2:#FBD5E1;
+  --pink-dark:#D94F78; --shadow:0 6px 20px rgba(252,163,183,.12);
   --mon:#e8c85b; --tue:#e79a9a; --wed:#8fb9d9; --thu:#a9c99a;
-  --fri:#c7a7d8; --sat:#e5ad7c; --sun:#b6a6a0;
+  --fri:#c7a7d8; --sat:#e5ad7c; --sun:#B9A8B2;
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font-family:Meiryo,"メイリオ",system-ui,-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}
@@ -26,14 +26,16 @@ h3{font-size:15px;margin:0 0 8px}
 p{margin:0}
 .sub{font-size:12px;color:var(--muted);margin-top:4px}
 .card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:16px;box-shadow:var(--shadow);margin-bottom:14px}
-.nav{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom,0px));width:min(720px,calc(100% - 24px));z-index:10;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:10px;background:var(--card);border:1px solid var(--border);border-radius:18px;box-shadow:0 8px 28px rgba(93,65,47,.18)}
+.nav{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom,0px));width:min(720px,calc(100% - 24px));z-index:10;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:10px;background:var(--card);border:1px solid var(--border);border-radius:18px;box-shadow:0 8px 28px rgba(252,163,183,.25)}
 .nav button,.seg button,.ghost,.primary{border:1px solid var(--border);background:var(--card);color:var(--text);border-radius:12px;padding:10px 8px;cursor:pointer}
-.nav button.active,.seg button.active{background:var(--pink2);border-color:#e6b8bd;color:var(--pink-dark);font-weight:700}
+.nav button{background:#F7ADC3;border-color:#F7ADC3;color:#fff}
+.nav button.active{background:#fff;border-color:#D94F78;color:#D94F78;font-weight:700;box-shadow:inset 0 0 0 1px #D94F78}
+.seg button.active{background:var(--pink2);border-color:#F7ADC3;color:var(--pink-dark);font-weight:700}
 .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 label{display:block;font-size:12px;color:var(--muted)}
-input{width:100%;margin-top:6px;border:1px solid var(--border);border-radius:11px;background:#fffdf9;color:var(--text);padding:11px 10px;outline:none}
-input:focus{border-color:#d9a6ad;box-shadow:0 0 0 3px rgba(232,183,189,.22)}
-.primary{background:var(--pink);border-color:#dca8ae;color:#57353a;font-weight:700;width:100%;margin-top:12px}
+input{width:100%;margin-top:6px;border:1px solid var(--border);border-radius:11px;background:#FFFFFF;color:var(--text);padding:11px 10px;outline:none}
+input:focus{border-color:#FCA3B7;box-shadow:0 0 0 3px rgba(252,163,183,.22)}
+.primary{background:#FCA3B7;border-color:#FCA3B7;color:#fff;font-weight:700;width:100%;margin-top:12px}
 .ghost{background:transparent}
 .status{font-size:12px;color:var(--pink-dark);min-height:18px;margin-top:7px}
 .weeknav{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
@@ -44,17 +46,17 @@ input:focus{border-color:#d9a6ad;box-shadow:0 0 0 3px rgba(232,183,189,.22)}
 .days{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
 .dayname{text-align:center;font-size:10px;color:var(--muted);margin-bottom:4px}
 .daycell{min-width:0}
-.daybar{height:25px;background:#f3e9dd;border:1px solid #eadbce;border-radius:7px;display:flex;align-items:stretch;overflow:hidden}
+.daybar{height:25px;background:#FCE8EF;border:1px solid #F8D3DF;border-radius:7px;display:flex;align-items:stretch;overflow:hidden}
 .seg{min-width:6px;flex:0 0 6px}
-.daycell.today .daybar{outline:2px solid #c99099;outline-offset:1px}
+.daycell.today .daybar{outline:2px solid #FCA3B7;outline-offset:1px}
 .dayvalue{text-align:center;font-size:10px;color:var(--muted);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.totalbar{position:relative;height:30px;background:#f1e5d8;border:1px solid #e4d2c2;border-radius:8px;margin-top:2px}
+.totalbar{position:relative;height:30px;background:#FCE8EF;border:1px solid #F8D3DF;border-radius:8px;margin-top:2px}
 .totalbar .clip{position:absolute;inset:0;overflow:hidden;border-radius:7px}
-.totalbar .overzone{position:absolute;top:0;right:0;height:100%;background:rgba(232,183,189,.18)}
+.totalbar .overzone{position:absolute;top:0;right:0;height:100%;background:rgba(252,163,183,.15)}
 .totalbar .fillrow{position:absolute;left:0;top:0;height:100%;display:flex}
 .totalbar .total-seg{height:100%;min-width:0;flex:1 1 0}
 .totalbar .hatch{position:absolute;top:0;height:100%;background:repeating-linear-gradient(135deg,rgba(255,255,255,.55) 0 3px,transparent 3px 7px);pointer-events:none}
-.targetline{position:absolute;top:-5px;height:40px;border-left:2px dashed #a9786e;z-index:4}
+.targetline{position:absolute;top:-5px;height:40px;border-left:2px dashed #D94F78;z-index:4}
 .targetlabel{position:absolute;left:0;top:-14px;transform:translateX(-50%);font-size:9px;color:var(--muted);white-space:nowrap}
 .pct{font-weight:700}.pct.done{color:var(--pink-dark)}
 .totalinfo{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:18px}
@@ -63,14 +65,14 @@ input:focus{border-color:#d9a6ad;box-shadow:0 0 0 3px rgba(232,183,189,.22)}
 .dot{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:3px}
 .compare{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .comparebox{background:var(--card2);border:1px solid var(--border);border-radius:13px;padding:12px}
-.comparebox.current-better{background:#dfc0c3;border-color:#d2a9ad}
+.comparebox.current-better{background:#FBD5E1;border-color:#F7ADC3}
 .comparebox .big{font-size:20px;font-weight:700;margin:4px 0}
-.delta.up{color:#9b6a5c}.delta.down{color:#66866b}.delta.same{color:var(--muted)}
+.delta.up{color:#D94F78}.delta.down{color:#66866b}.delta.same{color:var(--muted)}
 .calendar-head{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:5px}
 .calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
 .calday{min-height:70px;min-width:0;background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:5px;cursor:pointer}
 .calday.empty{background:transparent;border-color:transparent;cursor:default}
-.calday.today{outline:2px solid #c99099;outline-offset:1px}
+.calday.today{outline:2px solid #FCA3B7;outline-offset:1px}
 .calnum{font-size:10px;color:var(--muted);margin-bottom:5px}
 .caldots{display:flex;gap:3px;flex-wrap:wrap}
 .caldot{height:5px;border-radius:3px;flex:1;min-width:8px}
@@ -79,9 +81,9 @@ input:focus{border-color:#d9a6ad;box-shadow:0 0 0 3px rgba(232,183,189,.22)}
 .tabs button{flex:1}
 .row{display:flex;justify-content:space-between;align-items:center;gap:10px}
 .setting-row{display:grid;grid-template-columns:1fr 150px;gap:10px;align-items:end;margin-bottom:10px}
-.modal{position:fixed;inset:0;background:rgba(70,46,35,.28);display:none;align-items:flex-end;justify-content:center;padding:12px;z-index:20}
+.modal{position:fixed;inset:0;background:rgba(90,42,60,.3);display:none;align-items:flex-end;justify-content:center;padding:12px;z-index:20}
 .modal.open{display:flex}
-.modalbox{width:min(560px,100%);background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px;box-shadow:0 20px 50px rgba(60,40,30,.18)}
+.modalbox{width:min(560px,100%);background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px;box-shadow:0 20px 50px rgba(90,42,60,.18)}
 .modal-actions{display:flex;gap:8px;margin-top:12px}.modal-actions button{flex:1}
 @media(min-width:600px){.modal{align-items:center}.app{padding-top:28px}}
 @media(max-width:470px){.grid3{grid-template-columns:1fr}.setting-row{grid-template-columns:1fr 125px}.days{gap:3px}.daybar{height:23px}.app{padding-left:12px;padding-right:12px}}

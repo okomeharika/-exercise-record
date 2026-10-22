@@ -7,6 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>運動記録</title>
+<script>try{var r=document.documentElement;if(localStorage.getItem("exercise-theme-v1")==="dark")r.setAttribute("data-theme","dark");if(localStorage.getItem("exercise-color-v1")==="green")r.setAttribute("data-color","green")}catch(e){}</script>
 <style>
 :root{
   --bg:#FFF0F5; --card:#FFFFFF; --card2:#FFF7FA; --text:#5A2A3C;
@@ -14,6 +15,32 @@
   --pink-dark:#D94F78; --shadow:0 6px 20px rgba(252,163,183,.12);
   --mon:#FAFAAC; --tue:#EDB9C6; --wed:#B9D3ED; --thu:#D3EDB9;
   --fri:#F1E2B5; --sat:#B9C6ED; --sun:#E9BDBD;
+  --accent:#FCA3B7; --accent-rgb:252,163,183; --overlay-rgb:90,42,60;
+  --soft:#FCE8EF; --input:#FFFFFF; --pink-sel:#EE86A3; --avg:#7CB518; --avg-text:#6A9E12;
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#1C1317; --card:#2A1E24; --card2:#34252D; --text:#F6E3EA;
+  --muted:#BC96A8; --border:#4B323D; --pink:#C96584; --pink2:#5B3141;
+  --pink-dark:#FF86A9; --shadow:0 6px 20px rgba(0,0,0,.35);
+  --mon:#C9C96A; --tue:#C98A9B; --wed:#7FA3CC; --thu:#9CC57A;
+  --fri:#C9B67C; --sat:#8393CC; --sun:#C98C8C;
+  --accent:#C96584; --accent-rgb:201,101,132; --overlay-rgb:0,0,0;
+  --soft:#3B2A33; --input:#231920; --pink-sel:#E27799; --avg:#A6D94A; --avg-text:#B8E564;
+}
+:root[data-color="green"]{
+  --bg:#EFF8F1; --card:#FFFFFF; --card2:#F5FBF6; --text:#274A33;
+  --muted:#6B9179; --border:#CDE6D3; --pink:#8CCB9D; --pink2:#D2EDD9;
+  --pink-dark:#2F8F54; --shadow:0 6px 20px rgba(70,160,100,.12);
+  --accent:#6CBF84; --accent-rgb:108,191,132; --overlay-rgb:30,70,45;
+  --soft:#E3F2E7; --input:#FFFFFF; --pink-sel:#5DB57A; --avg:#F29B38; --avg-text:#C7700F;
+}
+:root[data-color="green"][data-theme="dark"]{
+  --bg:#111A14; --card:#1B2820; --card2:#223228; --text:#E1F1E6;
+  --muted:#93B5A0; --border:#33493A; --pink:#4C9966; --pink2:#2B4936;
+  --pink-dark:#6FDB92; --shadow:0 6px 20px rgba(0,0,0,.35);
+  --accent:#4C9966; --accent-rgb:76,153,102; --overlay-rgb:0,0,0;
+  --soft:#25372B; --input:#15201A; --pink-sel:#58B777; --avg:#FFB561; --avg-text:#FFC785;
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font-family:Meiryo,"メイリオ",system-ui,-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}
@@ -28,14 +55,14 @@ p{margin:0}
 .card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:16px;box-shadow:var(--shadow);margin-bottom:14px}
 .nav{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom,0px));width:min(720px,calc(100% - 24px));z-index:10;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:10px;background:var(--card);border:1px solid var(--border);border-radius:18px;box-shadow:0 8px 28px rgba(252,163,183,.25)}
 .nav button,.seg button,.ghost,.primary{border:1px solid var(--border);background:var(--card);color:var(--text);border-radius:12px;padding:10px 8px;cursor:pointer}
-.nav button{background:#F7ADC3;border-color:#F7ADC3;color:#fff}
-.nav button.active{background:#fff;border-color:#D94F78;color:#D94F78;font-weight:700;box-shadow:inset 0 0 0 1px #D94F78}
-.seg button.active{background:var(--pink2);border-color:#F7ADC3;color:var(--pink-dark);font-weight:700}
+.nav button{background:var(--pink);border-color:var(--pink);color:#fff}
+.nav button.active{background:var(--card);border-color:var(--pink-dark);color:var(--pink-dark);font-weight:700;box-shadow:inset 0 0 0 1px var(--pink-dark)}
+.seg button.active{background:var(--pink2);border-color:var(--pink);color:var(--pink-dark);font-weight:700}
 .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 label{display:block;font-size:12px;color:var(--muted)}
-input{width:100%;margin-top:6px;border:1px solid var(--border);border-radius:11px;background:#FFFFFF;color:var(--text);padding:11px 10px;outline:none}
-input:focus{border-color:#FCA3B7;box-shadow:0 0 0 3px rgba(252,163,183,.22)}
-.primary{background:#FCA3B7;border-color:#FCA3B7;color:#fff;font-weight:700;width:100%;margin-top:12px}
+input{width:100%;margin-top:6px;border:1px solid var(--border);border-radius:11px;background:var(--input);color:var(--text);padding:11px 10px;outline:none}
+input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(var(--accent-rgb),.22)}
+.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700;width:100%;margin-top:12px}
 .ghost{background:transparent}
 .status{font-size:12px;color:var(--pink-dark);min-height:18px;margin-top:7px}
 .weeknav{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
@@ -46,17 +73,17 @@ input:focus{border-color:#FCA3B7;box-shadow:0 0 0 3px rgba(252,163,183,.22)}
 .days{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
 .dayname{text-align:center;font-size:10px;color:var(--muted);margin-bottom:4px}
 .daycell{min-width:0}
-.daybar{height:25px;background:#FCE8EF;border:1px solid #F8D3DF;border-radius:7px;display:flex;align-items:stretch;overflow:hidden}
+.daybar{height:25px;background:var(--soft);border:1px solid var(--border);border-radius:7px;display:flex;align-items:stretch;overflow:hidden}
 .seg{min-width:6px;flex:0 0 6px}
-.daycell.today .daybar{outline:2px solid #FCA3B7;outline-offset:1px}
+.daycell.today .daybar{outline:2px solid var(--accent);outline-offset:1px}
 .dayvalue{text-align:center;font-size:10px;color:var(--muted);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.totalbar{position:relative;height:30px;background:#FCE8EF;border:1px solid #F8D3DF;border-radius:8px;margin-top:2px}
+.totalbar{position:relative;height:30px;background:var(--soft);border:1px solid var(--border);border-radius:8px;margin-top:2px}
 .totalbar .clip{position:absolute;inset:0;overflow:hidden;border-radius:7px}
-.totalbar .overzone{position:absolute;top:0;right:0;height:100%;background:rgba(252,163,183,.15)}
+.totalbar .overzone{position:absolute;top:0;right:0;height:100%;background:rgba(var(--accent-rgb),.15)}
 .totalbar .fillrow{position:absolute;left:0;top:0;height:100%;display:flex}
 .totalbar .total-seg{height:100%;min-width:0;flex:1 1 0}
 .totalbar .hatch{position:absolute;top:0;height:100%;background:repeating-linear-gradient(135deg,rgba(255,255,255,.55) 0 3px,transparent 3px 7px);pointer-events:none}
-.targetline{position:absolute;top:-5px;height:40px;border-left:2px dashed #D94F78;z-index:4}
+.targetline{position:absolute;top:-5px;height:40px;border-left:2px dashed var(--pink-dark);z-index:4}
 .targetlabel{position:absolute;left:0;top:-14px;transform:translateX(-50%);font-size:9px;color:var(--muted);white-space:nowrap}
 .pct{font-weight:700}.pct.done{color:var(--pink-dark)}
 .totalinfo{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:18px}
@@ -65,14 +92,14 @@ input:focus{border-color:#FCA3B7;box-shadow:0 0 0 3px rgba(252,163,183,.22)}
 .dot{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:3px}
 .compare{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .comparebox{background:var(--card2);border:1px solid var(--border);border-radius:13px;padding:12px}
-.comparebox.current-better{background:#FBD5E1;border-color:#F7ADC3}
+.comparebox.current-better{background:var(--pink2);border-color:var(--pink)}
 .comparebox .big{font-size:20px;font-weight:700;margin:4px 0}
-.delta.up{color:#D94F78}.delta.down{color:#66866b}.delta.same{color:var(--muted)}
+.delta.up{color:var(--pink-dark)}.delta.down{color:#66866b}.delta.same{color:var(--muted)}
 .calendar-head{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:5px}
 .calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
 .calday{min-height:70px;min-width:0;background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:5px;cursor:pointer}
 .calday.empty{background:transparent;border-color:transparent;cursor:default}
-.calday.today{outline:2px solid #FCA3B7;outline-offset:1px}
+.calday.today{outline:2px solid var(--accent);outline-offset:1px}
 .calnum{font-size:10px;color:var(--muted);margin-bottom:5px}
 .caldots{display:flex;gap:3px;flex-wrap:wrap}
 .caldot{height:5px;border-radius:3px;flex:1;min-width:8px}
@@ -81,16 +108,21 @@ input:focus{border-color:#FCA3B7;box-shadow:0 0 0 3px rgba(252,163,183,.22)}
 .tabs button{flex:1}
 .row{display:flex;justify-content:space-between;align-items:center;gap:10px}
 .setting-row{display:grid;grid-template-columns:1fr 150px;gap:10px;align-items:end;margin-bottom:10px}
-.modal{position:fixed;inset:0;background:rgba(90,42,60,.3);display:none;align-items:flex-end;justify-content:center;padding:12px;z-index:20}
+.modal{position:fixed;inset:0;background:rgba(var(--overlay-rgb),.3);display:none;align-items:flex-end;justify-content:center;padding:12px;z-index:20}
 .modal.open{display:flex}
-.modalbox{width:min(560px,100%);background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px;box-shadow:0 20px 50px rgba(90,42,60,.18)}
+.modalbox{width:min(560px,100%);background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px;box-shadow:0 20px 50px rgba(var(--overlay-rgb),.18)}
 .modal-actions{display:flex;gap:8px;margin-top:12px}.modal-actions button{flex:1}
 .rangebtns{display:flex;gap:5px}
 .rangebtns button{border:1px solid var(--border);background:var(--card);color:var(--text);border-radius:9px;padding:5px 10px;font-size:12px;cursor:pointer}
-.rangebtns button.active{background:var(--pink2);border-color:#F7ADC3;color:var(--pink-dark);font-weight:700}
+.rangebtns button.active{background:var(--pink2);border-color:var(--pink);color:var(--pink-dark);font-weight:700}
 .chartbox{background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:12px 10px 8px;margin-bottom:10px}
 .chartbox svg{display:block;width:100%;height:auto}
+.chartbox svg text{font-family:inherit}
 .chartbox .metric-head{padding:0 4px}
+.switch{position:relative;width:52px;height:30px;flex:0 0 52px;border-radius:999px;border:1px solid var(--border);background:var(--soft);cursor:pointer;padding:0;transition:background .2s}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:var(--pink);transition:transform .2s}
+.switch[aria-checked="true"]{background:var(--pink2);border-color:var(--pink)}
+.switch[aria-checked="true"]::after{transform:translateX(22px);background:var(--pink-dark)}
 @media(min-width:600px){.modal{align-items:center}.app{padding-top:28px}}
 @media(max-width:470px){.grid3{grid-template-columns:1fr}.setting-row{grid-template-columns:1fr 125px}.days{gap:3px}.daybar{height:23px}.app{padding-left:12px;padding-right:12px}}
 
@@ -138,7 +170,6 @@ input:focus{border-color:#FCA3B7;box-shadow:0 0 0 3px rgba(252,163,183,.22)}
 <div id="chartReview">
 <div class="row" style="margin-bottom:12px"><h2 style="margin:0">週別グラフ</h2><div class="rangebtns" id="rangeBtns"><button data-n="4">4週</button><button data-n="8" class="active">8週</button><button data-n="12">12週</button></div></div>
 <div id="weeklyCharts"></div>
-<p class="sub">各週（月〜日）のトータル。棒をタップすると、その週と今週を比較します（初期は先週）。点線は週間目標です。</p>
 </div>
 <div id="weekReview" style="margin-top:22px;padding-top:16px;border-top:1px solid var(--border)">
 <div class="weeknav"><button class="ghost" id="prevReview">‹</button><div class="weektitle" id="reviewWeek"></div><button class="ghost" id="nextReview">›</button></div>
@@ -163,6 +194,11 @@ input:focus{border-color:#FCA3B7;box-shadow:0 0 0 3px rgba(252,163,183,.22)}
 <div class="setting-row"><label>Fit Boxing 2（分）<input id="goalB" type="number" min="1" step="1"></label><span class="sub">1週間の目標</span></div>
 <button class="primary" id="saveGoals">目標を保存</button>
 <div class="status" id="goalStatus"></div>
+</section>
+<section class="card">
+<h2>カラーテーマ</h2>
+<div class="rangebtns" id="colorBtns" style="margin-bottom:16px"><button data-color="pink" class="active"><span class="dot" style="background:#F7ADC3"></span>ピンク</button><button data-color="green"><span class="dot" style="background:#8CCB9D"></span>グリーン</button></div>
+<div class="row" style="padding-top:14px;border-top:1px solid var(--border)"><div><h3 style="margin:0">ダークモード</h3><p class="sub">暗い配色に切り替えます。</p></div><button class="switch" id="themeSwitch" role="switch" aria-checked="false" aria-label="ダークモード"></button></div>
 </section>
 <section class="card">
 <h2>このアプリについて</h2>
@@ -313,21 +349,24 @@ function renderCharts(){
   const max=niceMax(Math.max(...totals,goal));
   const y=v=>pt+ph-(v/max)*ph, slot=pw/chartWeeks, bw=Math.min(30,slot*.62);
   let g="";
-  [0,.5,1].forEach(t=>{const v=max*t;g+=`<line x1="${pl}" x2="${pl+pw}" y1="${y(v)}" y2="${y(v)}" stroke="#F8D3DF" stroke-width="1"/><text x="${pl+pw+6}" y="${y(v)+4}" font-size="10" fill="#A67B8D">${fmt(v)}</text>`});
+  [0,.5,1].forEach(t=>{const v=max*t;g+=`<line x1="${pl}" x2="${pl+pw}" y1="${y(v)}" y2="${y(v)}" style="stroke:var(--border)" stroke-width="1"/><text x="${pl+pw+6}" y="${y(v)+4}" font-size="10" style="fill:var(--muted)">${fmt(v)}</text>`});
   let bars="";
   weeks.forEach((w,i)=>{
    const cx=pl+slot*i+slot/2, v=totals[i], cur=w.o===0, sel=w.o===selWeek;
-   if(v>0)bars+=`<rect x="${cx-bw/2}" y="${y(v)}" width="${bw}" height="${pt+ph-y(v)}" rx="4" fill="${cur?"#D94F78":sel?"#EE86A3":"#F7ADC3"}"${sel?' stroke="#D94F78" stroke-width="1.5" stroke-dasharray="3 2"':""}/>`;
-   if(v>0&&chartWeeks<=8)bars+=`<text x="${cx}" y="${y(v)-4}" font-size="9" text-anchor="middle" fill="${cur?"#D94F78":"#A67B8D"}" font-weight="${cur?700:400}">${fmt(v)}</text>`;
+   if(v>0)bars+=`<rect x="${cx-bw/2}" y="${y(v)}" width="${bw}" height="${pt+ph-y(v)}" rx="4" style="fill:var(${cur?"--pink-dark":sel?"--pink-sel":"--pink"})${sel?";stroke:var(--pink-dark)":""}"${sel?' stroke-width="1.5" stroke-dasharray="3 2"':""}/>`;
+   if(v>0&&chartWeeks<=8)bars+=`<text x="${cx}" y="${y(v)-4}" font-size="10" text-anchor="middle" style="fill:var(${cur?"--pink-dark":"--muted"})" font-weight="${cur?700:400}">${fmt(v)}</text>`;
    const lab=cur?"今週":`${w.ds[0].getMonth()+1}/${w.ds[0].getDate()}`;
-   bars+=`<text x="${cx}" y="${H-10}" font-size="${chartWeeks>8?8:10}" text-anchor="middle" fill="${cur?"#D94F78":"#A67B8D"}" font-weight="${cur||sel?700:400}">${lab}</text>`;
+   if(chartWeeks<=8||(chartWeeks-1-i)%2===0)bars+=`<text x="${cx}" y="${H-10}" font-size="10" text-anchor="middle" style="fill:var(${cur?"--pink-dark":"--muted"})" font-weight="${cur||sel?700:400}">${lab}</text>`;
    bars+=`<rect x="${cx-slot/2}" y="${pt}" width="${slot}" height="${H-pt}" fill="transparent" style="cursor:pointer" onclick="selectWeek(${w.o})"/>`;
   });
-  const gl=goal>0?`<line x1="${pl}" x2="${pl+pw}" y1="${y(goal)}" y2="${y(goal)}" stroke="#D94F78" stroke-width="1.5" stroke-dasharray="5 4"/><text x="${pl+2}" y="${y(goal)-4}" font-size="9" fill="#D94F78">目標 ${fmt(goal)}</text>`:"";
+  const avg=totals.reduce((x,y)=>x+y,0)/totals.length;
+  const close=goal>0&&Math.abs(y(avg)-y(goal))<12, avgBelow=close&&y(avg)>=y(goal), goalBelow=close&&!avgBelow;
+  const gl=goal>0?`<line x1="${pl}" x2="${pl+pw}" y1="${y(goal)}" y2="${y(goal)}" style="stroke:var(--pink-dark)" stroke-width="1.5" stroke-dasharray="5 4"/><text x="${pl+2}" y="${y(goal)+(goalBelow?11:-4)}" font-size="10" style="fill:var(--pink-dark);stroke:var(--card2)" font-weight="700" stroke-width="3" paint-order="stroke">目標 ${fmt(goal)}</text>`:"";
+  const al=avg>0?`<line x1="${pl}" x2="${pl+pw}" y1="${y(avg)}" y2="${y(avg)}" style="stroke:var(--avg)" stroke-width="1.5" stroke-dasharray="2 3"/><text x="${pl+2}" y="${y(avg)+(avgBelow?11:-4)}" font-size="10" style="fill:var(--avg-text);stroke:var(--card2)" font-weight="700" stroke-width="3" paint-order="stroke">平均 ${fmt(Math.round(avg))}</text>`:"";
   const cur=totals[totals.length-1], prev=totals[chartWeeks-1+selWeek];
   return `<div class="chartbox">
    <div class="metric-head"><span><strong>${m.label}</strong></span><span class="sub" style="margin:0">今週 ${m.format(cur)}　${weekLabel(selWeek)}比 ${delta(cur,prev)}</span></div>
-   <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${m.label}の週別トータル">${g}${bars}${gl}</svg>
+   <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${m.label}の週別トータル">${g}${bars}${gl}${al}</svg>
   </div>`;
  }).join("");
 }
@@ -336,6 +375,30 @@ document.querySelectorAll("#rangeBtns button").forEach(b=>b.onclick=()=>{
  document.querySelectorAll("#rangeBtns button").forEach(x=>x.classList.toggle("active",x===b));
  renderCharts();
 });
+
+const THEMEKEY="exercise-theme-v1", COLORKEY="exercise-color-v1";
+function updateMeta(){
+ const mt=document.querySelector('meta[name="theme-color"]');
+ try{const v=getComputedStyle(document.documentElement).getPropertyValue("--bg").trim();if(v&&mt)mt.setAttribute("content",v)}catch(e){}
+}
+function applyTheme(dark,persist){
+ const r=document.documentElement;
+ if(dark)r.setAttribute("data-theme","dark");else r.removeAttribute("data-theme");
+ themeSwitch.setAttribute("aria-checked",dark?"true":"false");
+ updateMeta();
+ if(persist){try{localStorage.setItem(THEMEKEY,dark?"dark":"light")}catch(e){}}
+}
+function applyColor(c,persist){
+ const r=document.documentElement;
+ if(c==="green")r.setAttribute("data-color","green");else r.removeAttribute("data-color");
+ document.querySelectorAll("#colorBtns button").forEach(b=>b.classList.toggle("active",b.dataset.color===(c==="green"?"green":"pink")));
+ updateMeta();
+ if(persist){try{localStorage.setItem(COLORKEY,c==="green"?"green":"pink")}catch(e){}}
+}
+themeSwitch.onclick=()=>applyTheme(themeSwitch.getAttribute("aria-checked")!=="true",true);
+document.querySelectorAll("#colorBtns button").forEach(b=>b.onclick=()=>applyColor(b.dataset.color,true));
+applyTheme(document.documentElement.getAttribute("data-theme")==="dark",false);
+applyColor(document.documentElement.getAttribute("data-color")||"pink",false);
 function renderMonth(){
  const base=new Date(new Date().getFullYear(),new Date().getMonth()+monthOffset,1);
  monthTitle.textContent=`${base.getFullYear()}年${base.getMonth()+1}月`;
